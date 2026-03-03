@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Task Manager</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 2rem auto;
+        max-width: 800px;
+        line-height: 1.5;
+      }
+      h1 {
+        margin-bottom: 1rem;
+      }
+      form {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      input {
+        padding: 0.5rem;
+      }
+      button {
+        padding: 0.5rem 0.75rem;
+        cursor: pointer;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+      li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+      }
+      .task-meta {
+        color: #555;
+        font-size: 0.9rem;
+      }
+      .done {
+        text-decoration: line-through;
+        opacity: 0.7;
+      }
+      .actions {
+        display: flex;
+        gap: 0.4rem;
+      }
+      .empty {
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Student Task Manager</h1>
+
+    <form action="{{ url_for('add_task') }}" method="post">
+      <input type="text" name="title" placeholder="Task title" required />
+      <input type="text" name="subject" placeholder="Subject (optional)" />
+      <button type="submit">Add Task</button>
+    </form>
+
+    {% if tasks %}
+    <ul>
+      {% for task in tasks %}
+      <li>
+        <div>
+          <div class="{% if task.completed %}done{% endif %}">{{ task.title }}</div>
+          {% if task.subject %}
+          <div class="task-meta">Subject: {{ task.subject }}</div>
+          {% endif %}
+        </div>
+
+        <div class="actions">
+          <form action="{{ url_for('toggle_task', task_id=task._id) }}" method="post">
+            <button type="submit">
+              {% if task.completed %}Mark Pending{% else %}Mark Done{% endif %}
+            </button>
+          </form>
+          <form action="{{ url_for('delete_task', task_id=task._id) }}" method="post">
+            <button type="submit">Delete</button>
+          </form>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="empty">No tasks yet. Add your first task above.</p>
+    {% endif %}
+  </body>
+</html>
